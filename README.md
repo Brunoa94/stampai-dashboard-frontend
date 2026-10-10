@@ -1,19 +1,35 @@
-# StampAI frontend
+# StampAI dashboard frontend
 
-A minimal Vue 3 project using Vite and JavaScript.
+Vue 3 + TypeScript analytics and finance dashboard implementing the specifications in `DASHBOARD_UI`. Shared primitives live in `src/shared/ui`; domain UI, services, contracts, mappers, and state live in their feature folders. Design tokens are centralized in `src/styles/main.css`.
 
-## Start
+Run `npm install`, then `npm run dev`. Run `npm run typecheck`, `npm run lint`, `npm test`, `npm run verify:patterns`, and `npm run build` for verification. `npm run test:e2e` runs desktop/mobile browser flows against mocked contract responses using installed Google Chrome (override `CHROME_PATH` if needed).
 
-```sh
-npm install
-npm run dev
-```
+Copy `.env.example` to `.env.local` to set the external API origin (without `/api`) and verified GA4 property timezone, or use Connection in the sidebar. Supply a finance bearer JWT through that panel; tokens remain in memory and are cleared on logout. Configure backend CORS or a deployment proxy. No provider credentials belong in the frontend.
 
-Edit `src/App.vue` to change the page.
+Login is a UI preview only, as requested. It validates required fields but does not submit credentials, authenticate, or restrict routes. Dashboard routes remain open for development. Logout clears the supplied token, report query cache, and returns to the login preview. Production authentication and route guards need the later login contract.
 
-## Build
+There is no fabricated report data. Generate actions use the documented APIs explicitly, with no automatic POST retries. Finance retries preserve request IDs; analytics retries may create additional persisted analyses. Views, filters, charts, and CSV exports reuse responses. Finance history opens immutable snapshots; reference edits affect future reports. Schedules and notifications use the documented endpoints; notification read state and alert acknowledgement are independent.
 
-```sh
-npm run build
-npm run preview
-```
+Chart visibility, table sorting, and the selected analytics funnel are local browser preferences, not persisted report state. Money preserves currency minor-unit semantics and unavailable values. Analytics stages are aggregate events, not measured conversion. Financial contribution excludes overhead and is not business net profit.
+
+The fonts use General Sans / Inter and JetBrains Mono family stacks with local fallbacks. Licensed font files are not included. Live integration requires a configured backend and token; no backend was bundled with these specifications.
+
+Keep Vue templates focused on rendering. Do not define table columns, navigation/tab items, or select-option configuration as inline arrays of objects in template bindings. Put static feature configuration in named, explicitly typed exports under `src/features/<feature>/lib/constants/`; use shared constants only for domain-independent configuration. Import constants directly and bind their names, for example `:columns="PRODUCT_CONTRIBUTION_COLUMNS"`. Build configuration that depends on reactive data with named computed values in script setup or the owning composable; bind those names rather than constructing arrays or objects in templates. The same rule applies to export-context objects. `npm run verify:patterns` rejects inline configuration in these bindings.
+
+Use a single blank line between logical code statements and declarations, keeping related imports together. Separate sibling template elements and Vue SFC blocks with a blank line. Keep opening/closing tags on their own lines rather than joining adjacent components. Do not add blank lines between every attribute or every line of a multiline expression. Run `npm run format` to apply the spacing convention; `npm run lint` enforces it.
+
+Substantial component logic must always be extracted into a named `use...` composable. This includes multi-step workflows, reactive data preparation, filtering and sorting, validation, preference handling, and asynchronous orchestration, even when only one component uses it. Keep feature behavior in `src/features/<feature>/lib/composables/` and domain-independent behavior in `src/shared/lib/composables/`. Components retain props, emits, rendering, and small UI handlers. Preserve prop reactivity when passing inputs to composables; do not copy reactive props into nonreactive snapshots. Keep pure transformations in helpers or mappers and static configuration in constants, called or consumed by the composable as needed. Review added and modified code against this rule before completing an implementation.
+
+Keep route views focused on composing features and choosing loading, error, empty, and success states. Extract page headers, forms, report workspaces, and section selection into focused feature components with typed props, models, and events. Place route-level workflows in the owning feature composable; avoid large templates and business logic in views.
+
+Prioritize decoupling when designing composables. A composable may aggregate more than three features or distinct capabilities only when they share actual state or data required by those workflows. Keep unrelated capabilities in separate, focused composables, even when fewer than four are involved. Being used by the same component, belonging to the same domain, or using the same API client is not sufficient justification for aggregation. Use explicit, minimal reactive inputs and return only the state and actions needed by consumers. Compose related workflows through a thin orchestration composable when coordination is necessary, rather than building a general-purpose feature container. Count capabilities, not individual refs, computed values, or functions. Review shared-state dependencies before expanding a composable.
+
+Feature implementation documentation: [analytics](src/features/analyticsDashboard/README.md), [finance](src/features/financeDashboard/README.md), and [login preview](src/features/login/README.md). Every feature directory must contain a nonempty README covering purpose, flows, ownership, public contracts, configuration/API dependencies, states/recovery, tests, and limitations. `npm run verify:patterns` checks its presence; review its contents manually against the implementation.
+
+Documentation audit: all 11 files under `DASHBOARD_UI` were read on 2026-10-10; `BUILD_GUIDELINES/PROJECT.md` is empty. Feature documentation was missing and has been added. Login authentication remains deferred by explicit user instruction. Automated checks cover only the rules encoded in their scripts and tested scenarios, not complete specification compliance. Live integration verification is limited to login and saved-finance list/detail retrieval. Representative large-dataset performance/memory profiling remains unverified.
+
+Local development JWT exchange: with `VITE_API_ORIGIN=http://localhost:3002` (also accepts `http://127.0.0.1:3002` or `http://[::1]:3002`) and server-only `ADMIN_USER`/`ADMIN_PASSWORD` set in `.env`, restart `npm run dev`. Before the first API request without a manually supplied token, the Vite server posts credentials to `http://localhost:3002/api/auth/login`; the browser stores the returned JWT in memory and sends `Authorization: Bearer <token>` on requests. The confirmed login contract is `{ email: ADMIN_USER, password: ADMIN_PASSWORD }` and a top-level `{ token }` response. Set `ADMIN_USER` to the admin email address. Live login and saved-finance list/detail retrieval have been verified; report generation and mutations remain unverified against the live API. Login-page UI remains a preview. The exchange accepts only local requests, is disabled in production builds/preview, and never exposes admin credentials through `VITE_` variables. Production requires a separately deployed server authentication integration or a manually supplied token. No automatic login/report retries or silent expired-token refresh are performed.
+
+Saved finance reports load in the default **Saved reports** tab through authenticated GET list/detail endpoints, without generating a new report. Opening a saved snapshot or successfully generating a report switches to Overview. History has pagination, refresh, connection, loading, and retry states. Swagger was inspected at `http://localhost:3002/docs/json`; live login, saved-finance listing (one row), and saved-report detail returned HTTP 200 on 2026-10-10. Analytics history has no registered endpoint in that Swagger inventory.
+
+Charts use the manually installed shadcn-vue ChartContainer pattern with `@unovis/vue`, `@unovis/ts`, and `reka-ui`. The source is adapted from the [official MIT-licensed chart components](https://github.com/unovue/shadcn-vue/tree/dev/apps/v4/registry/new-york-v4/ui/chart) to the repository's typed SFC and shared-theme conventions. Chart mapping belongs in composables; keep series colors stable, preserve missing values as gaps, and retain keyboard-accessible exact values and table alternatives.

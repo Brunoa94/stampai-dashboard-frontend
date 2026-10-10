@@ -159,6 +159,10 @@ Separate files make components easier to test, navigate, reuse, and inspect thro
 
 ### Keep Complex Logic Out of Templates
 
+Use a single blank line between logical code statements and declarations, keeping related imports together. Separate sibling template elements and Vue SFC blocks with a blank line. Keep opening/closing tags on their own lines rather than joining adjacent components. Do not add blank lines between every attribute or every line of a multiline expression. Run `npm run format` to apply the spacing convention; `npm run lint` enforces it.
+
+Do not define table columns, navigation/tab items, select options, or export-context objects inline in template bindings. Static feature configuration belongs in named, explicitly typed exports under the owning feature's `lib/constants/`. Import those constants directly. Derive reactive configuration with named computed values in script setup or the owning composable and bind the resulting names. For example, use `:columns="PRODUCT_CONTRIBUTION_COLUMNS"` rather than an inline array of column objects. Run `npm run verify:patterns` to enforce this rule across generated components.
+
 Use `v-for` for rendering and a stable data identifier for `:key`. Move complex calculations into pure helpers and derive render data with `computed`. Filter data before rendering instead of combining `v-if` and `v-for` on the same element.
 
 ```typescript
@@ -559,3 +563,9 @@ Update the README when behavior or contracts change. Keep documentation portable
 ### Resolving Uncertainty
 
 Use existing implementations and project documentation to resolve routine choices. Ask for clarification only when a missing requirement materially affects behavior, scope, or an external contract. Continue independent work while clarification is pending.
+
+Substantial component logic must always be extracted into a named `use...` composable. This includes multi-step workflows, reactive data preparation, filtering and sorting, validation, preference handling, and asynchronous orchestration, even when only one component uses it. Keep feature behavior in `src/features/<feature>/lib/composables/` and domain-independent behavior in `src/shared/lib/composables/`. Components retain props, emits, rendering, and small UI handlers. Preserve prop reactivity when passing inputs to composables; do not copy reactive props into nonreactive snapshots. Keep pure transformations in helpers or mappers and static configuration in constants, called or consumed by the composable as needed. Review added and modified code against this rule before completing an implementation.
+
+Keep route views focused on composing features and choosing loading, error, empty, and success states. Extract page headers, forms, report workspaces, and section selection into focused feature components with typed props, models, and events. Place route-level workflows in the owning feature composable; avoid large templates and business logic in views.
+
+Prioritize decoupling when designing composables. A composable may aggregate more than three features or distinct capabilities only when they share actual state or data required by those workflows. Keep unrelated capabilities in separate, focused composables, even when fewer than four are involved. Being used by the same component, belonging to the same domain, or using the same API client is not sufficient justification for aggregation. Use explicit, minimal reactive inputs and return only the state and actions needed by consumers. Compose related workflows through a thin orchestration composable when coordination is necessary, rather than building a general-purpose feature container. Count capabilities, not individual refs, computed values, or functions. Review shared-state dependencies before expanding a composable.

@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@theme {
+  --color-gold: #fac306;
+  --color-black: #000000;
+  --color-surface: #0f0f0f;
+  --color-elevated: #1a1a1a;
+  --color-border: #262626;
+  --color-muted: #a3a3a3;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-purple: #a78bfa;
+  --font-sans: "General Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --shadow-gold: 0 0 20px rgb(250 195 6 / 0.15);
+}
+:root {
+  color-scheme: dark;
+  --primary-gold: #fac306;
+  --pure-black: #000;
+  --surface-dark: #0f0f0f;
+  --surface-elevated: #1a1a1a;
+  --border-color: #262626;
+  --text-secondary: #a3a3a3;
+  --emerald: #10b981;
+  --danger-red: #ef4444;
+}
+body {
+  margin: 0;
+  background: var(--pure-black);
+  color: white;
+  font-family: var(--font-sans);
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+:focus-visible {
+  outline: 2px solid var(--primary-gold);
+  outline-offset: 4px;
+}
+.glass-panel {
+  background: rgb(15 15 15 / 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+}
+.gold-panel {
+  border-color: rgb(250 195 6 / 0.3);
+  background: rgb(250 195 6 / 0.05);
+  box-shadow: var(--shadow-gold);
+}
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--surface-dark) 25%,
+    var(--surface-elevated) 45%,
+    var(--surface-dark) 65%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.7s infinite;
+  border: 1px solid var(--border-color);
+}
+.ai-pulse {
+  animation: pulse 1.5s infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 8px;
+}
+
+/* Shared shadcn-vue / Unovis chart theme. */
+.shadcn-chart {
+  --vis-font-family: var(--font-sans);
+  --vis-axis-tick-label-color: var(--color-muted);
+  --vis-axis-grid-color: var(--color-border);
+  --vis-axis-tick-color: transparent;
+  --vis-axis-domain-line-color: transparent;
+  --vis-axis-tick-label-font-size: 11px;
+  --vis-crosshair-line-stroke-color: var(--color-muted);
+}
