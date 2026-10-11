@@ -7,7 +7,7 @@ const props = defineProps<PropsI>();
 </script>
 
 <template>
-  <label :for="props.for" class="grid gap-2 text-xs font-medium text-muted">
+  <label :for="props.for" class="field-label grid content-start gap-2">
     <slot />
   </label>
 </template>

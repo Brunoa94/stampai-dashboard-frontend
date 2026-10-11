@@ -14,7 +14,7 @@ const emit = defineEmits<{ toggleSettings: []; logout: [] }>();
   <div class="mt-auto grid gap-3">
     <div
       v-if="!collapsed"
-      class="mb-5 hidden rounded-xl border border-border bg-glass p-4 md:block"
+      class="mb-5 hidden rounded-xl border border-border bg-elevated p-4 md:block"
     >
       <Chip variant="gold">Development preview</Chip>
 

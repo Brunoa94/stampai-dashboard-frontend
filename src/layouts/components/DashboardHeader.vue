@@ -2,6 +2,7 @@
 import { ArrowUpRight } from "@lucide/vue";
 import Button from "@/shared/ui/Button/Button.vue";
 import Span from "@/shared/ui/Span/Span.vue";
+import ThemeSelect from "@/shared/ui/ThemeSelect/ThemeSelect.vue";
 import Chip from "@/shared/ui/Chip/Chip.vue";
 
 interface PropsI {
@@ -16,26 +17,32 @@ const emit = defineEmits<{ loginPreview: [] }>();
 
 <template>
   <header
-    class="glass-bar sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border px-5 lg:px-8"
+    class="dashboard-bar sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border px-5 lg:px-8"
   >
-    <div class="flex items-center gap-2">
-      <Span variant="muted">Workspace</Span>
+    <div class="flex min-w-0 items-center gap-2">
+      <div class="hidden items-center gap-2 sm:flex">
+        <Span variant="muted">Workspace</Span>
 
-      <Span variant="muted">/</Span>
+        <Span variant="muted">/</Span>
+      </div>
 
-      <Span>{{ pageTitle }}</Span>
+      <Span class="truncate">{{ pageTitle }}</Span>
     </div>
 
     <div class="flex items-center gap-3">
-      <Chip :variant="apiConfigured ? 'success' : 'neutral'">
-        <div
-          :class="[
-            'size-1.5 rounded-full',
-            apiConfigured ? 'bg-success' : 'bg-muted',
-          ]"
-        />
-        {{ apiConfigured ? "API configured" : "API not configured" }}
-      </Chip>
+      <ThemeSelect />
+
+      <div class="hidden md:block">
+        <Chip :variant="apiConfigured ? 'success' : 'neutral'">
+          <div
+            :class="[
+              'size-1.5 rounded-full',
+              apiConfigured ? 'bg-success' : 'bg-muted',
+            ]"
+          />
+          {{ apiConfigured ? "API configured" : "API not configured" }}
+        </Chip>
+      </div>
 
       <div class="hidden sm:block">
         <Button variant="ghost" @click="emit('loginPreview')">

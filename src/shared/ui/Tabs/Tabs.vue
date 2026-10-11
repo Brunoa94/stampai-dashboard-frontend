@@ -14,7 +14,7 @@ const model = defineModel<string>({ required: true });
 <template>
   <nav
     :aria-label="label"
-    class="flex gap-2 overflow-x-auto border-b border-border pb-3"
+    class="section-tabs flex gap-6 overflow-x-auto border-b border-border"
   >
     <Button
       v-for="item in items"

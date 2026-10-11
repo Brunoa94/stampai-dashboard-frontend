@@ -210,23 +210,6 @@ export type InvoiceRecordType = {
   updated_at: string;
 } & ReferenceRequestType;
 
-export type ScheduleRequestType = {
-  name: string;
-  enabled: boolean;
-  cadence_days: number;
-  lookback_days: number;
-  include_ai: boolean;
-  next_run_at: string;
-};
-
-export type ScheduleType = ScheduleRequestType & {
-  id: string | number;
-  lease_until: string | null;
-  last_error: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
 export type NotificationType = {
   id: string | number;
   report_id: string;

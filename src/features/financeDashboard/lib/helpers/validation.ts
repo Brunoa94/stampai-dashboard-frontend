@@ -6,7 +6,6 @@ import { validDate } from "@/shared/lib/helpers/dates";
 import { AppError } from "@/shared/lib/constants/errors";
 import type {
   FinanceReportType,
-  ScheduleRequestType,
   ReferenceRequestType,
 } from "@/features/financeDashboard/lib/types/finance";
 
@@ -57,23 +56,6 @@ export function validFinanceReport(value: unknown): value is FinanceReportType {
     ) &&
     !!r.dashboard.orderMetrics
   );
-}
-
-export function validateSchedule(body: ScheduleRequestType): void {
-  const future = Date.parse(body.next_run_at);
-
-  if (
-    !body.name.trim() ||
-    !Number.isInteger(body.cadence_days) ||
-    !Number.isInteger(body.lookback_days) ||
-    body.cadence_days < 1 ||
-    body.cadence_days > 31 ||
-    body.lookback_days < 1 ||
-    body.lookback_days > 31 ||
-    !Number.isFinite(future) ||
-    future <= Date.now()
-  )
-    throw new AppError("SCHEDULE");
 }
 
 export function validateReference(

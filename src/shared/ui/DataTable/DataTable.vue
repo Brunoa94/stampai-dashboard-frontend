@@ -33,7 +33,7 @@ const { query, sort, ascending, filtered, sortBy } = useDataTable(props);
 </script>
 
 <template>
-  <section class="glass-panel overflow-hidden rounded-2xl">
+  <section class="dashboard-panel overflow-hidden rounded-xl">
     <div
       class="flex flex-wrap items-center justify-between gap-4 border-b border-border p-5"
     >
@@ -49,7 +49,7 @@ const { query, sort, ascending, filtered, sortBy } = useDataTable(props);
         <div v-if="search" class="relative">
           <Search
             :size="14"
-            class="absolute left-3 top-3.5 text-muted"
+            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
             aria-hidden="true"
           />
 
@@ -101,7 +101,7 @@ const { query, sort, ascending, filtered, sortBy } = useDataTable(props);
             >
               <Button
                 variant="ghost"
-                class="px-0 py-1 text-[10px] uppercase tracking-widest"
+                class="px-0 py-1 text-xs font-medium"
                 @click="sortBy(column.key)"
               >
                 {{ column.label }}

@@ -117,6 +117,10 @@ test("analytics generation, accessible stage graph, local filters, and failure r
 
   await connect(page);
 
+  await page
+    .getByRole("button", { name: "Generate analysis", exact: true })
+    .click();
+
   await page.getByRole("button", { name: "Ecommerce", exact: true }).click();
 
   await page.getByLabel("Start date", { exact: true }).fill("2026-10-01");
@@ -197,7 +201,7 @@ test("analytics generation, accessible stage graph, local filters, and failure r
   ).toContainText("2026-10-01");
 });
 
-test("finance snapshot, verified invoice edits, alerts, schedules, notifications, and history", async ({
+test("finance snapshot, verified invoice edits, alerts, notifications, and history", async ({
   page,
 }) => {
   const report = financeFixture();
@@ -293,19 +297,16 @@ test("finance snapshot, verified invoice edits, alerts, schedules, notifications
       });
     else if (url.includes("/notifications/"))
       await route.fulfill({ json: { id: 1, read: true } });
-    else if (url.endsWith("/schedules"))
-      await route.fulfill({
-        json:
-          request.method() === "GET"
-            ? []
-            : { id: 1, ...request.postDataJSON() },
-      });
     else await route.fulfill({ json: [] });
   });
 
   await page.goto("/#/finance");
 
   await connect(page);
+
+  await page
+    .getByRole("button", { name: "Generate report", exact: true })
+    .click();
 
   await page.getByLabel("Start date · UTC", { exact: true }).fill("2026-10-01");
 
@@ -380,27 +381,17 @@ test("finance snapshot, verified invoice edits, alerts, schedules, notifications
 
   expect(generation).toBe(1);
 
-  await page.getByRole("button", { name: "Schedules", exact: true }).click();
-
-  await page.getByRole("button", { name: "New schedule", exact: true }).click();
-
-  await page.getByLabel("Name", { exact: true }).fill("Daily");
-
-  await page
-    .getByLabel("Next execution · UTC", { exact: true })
-    .fill("2099-10-11T09:00");
-
-  await page
-    .getByRole("button", { name: "Save schedule", exact: true })
-    .click();
+  await expect(
+    page.getByRole("button", { name: "Schedules", exact: true }),
+  ).toHaveCount(0);
 
   await expect(
-    page.getByRole("status").filter({ hasText: "Schedule saved." }),
+    page.getByRole("button", { name: "Production costs", exact: true }),
   ).toBeVisible();
 
-  expect(
-    bodies.find((body) => body.url.endsWith("/schedules"))?.body.next_run_at,
-  ).toBe("2099-10-11T09:00:00Z");
+  await expect(
+    page.getByRole("button", { name: "Agent Overview", exact: true }),
+  ).toBeVisible();
 
   await expect(
     page.getByRole("button", { name: "Inbox", exact: true }),
@@ -575,9 +566,7 @@ test("saved report loading, failure, and recovery are visible", async ({
   await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
-test("empty schedules and inbox are distinct from failed requests", async ({
-  page,
-}) => {
+test("empty inbox is distinct from failed requests", async ({ page }) => {
   let failInbox = false;
 
   await page.route("**/__dashboard/admin-token", (route) =>
@@ -600,12 +589,6 @@ test("empty schedules and inbox are distinct from failed requests", async ({
   await page.goto("/#/finance");
 
   await connect(page);
-
-  await page.getByRole("button", { name: "Schedules", exact: true }).click();
-
-  await expect(
-    page.getByRole("heading", { name: "No schedules yet", exact: true }),
-  ).toBeVisible();
 
   await page.getByRole("button", { name: "Activity", exact: true }).click();
 
@@ -632,4 +615,250 @@ test("empty schedules and inbox are distinct from failed requests", async ({
   await expect(
     page.getByRole("heading", { name: "No notifications yet", exact: true }),
   ).toHaveCount(0);
+});
+
+test("color theme follows the system and remembers explicit preferences", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "light" });
+
+  await page.goto("/");
+
+  const theme = page.getByRole("combobox", { name: "Color theme" });
+
+  const root = page.locator("html");
+
+  await expect(theme).toHaveValue("system");
+
+  await expect(root).toHaveAttribute("data-theme", "light");
+
+  await page.emulateMedia({ colorScheme: "dark" });
+
+  await expect(root).toHaveAttribute("data-theme", "dark");
+
+  await expect(page.locator("header")).toHaveCSS(
+    "background-color",
+    "rgb(28, 31, 37)",
+  );
+
+  await theme.selectOption("light");
+
+  await expect(root).toHaveAttribute("data-theme", "light");
+
+  await expect(page.locator("header")).toHaveCSS(
+    "background-color",
+    "rgb(255, 255, 255)",
+  );
+
+  await page.reload();
+
+  await expect(theme).toHaveValue("light");
+
+  await expect(root).toHaveAttribute("data-theme", "light");
+
+  await theme.selectOption("dark");
+
+  await page
+    .getByRole("button", { name: "Login preview", exact: true })
+    .click();
+
+  await expect(root).toHaveAttribute("data-theme", "dark");
+
+  await expect(theme).toHaveValue("dark");
+
+  await theme.selectOption("system");
+
+  await page.emulateMedia({ colorScheme: "light" });
+
+  await expect(root).toHaveAttribute("data-theme", "light");
+});
+
+test("report controls align and remain usable at mobile widths", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await page
+    .getByRole("button", { name: "Generate analysis", exact: true })
+    .click();
+
+  const start = page.getByLabel("Start date", { exact: true });
+
+  const end = page.getByLabel("End date", { exact: true });
+
+  const preset = page.getByRole("button", { name: "Last 7 days", exact: true });
+
+  const generate = page.getByRole("button", {
+    name: "Generate analysis",
+    exact: true,
+  });
+
+  const sizes = await Promise.all(
+    [start, end, preset].map((control) => control.boundingBox()),
+  );
+
+  expect(sizes.every((size) => size && size.height >= 44)).toBe(true);
+
+  expect(new Set(sizes.map((size) => size?.height)).size).toBe(1);
+
+  expect(new Set(sizes.map((size) => size?.y)).size).toBe(1);
+
+  await preset.click();
+
+  await expect(start).not.toHaveValue("");
+
+  await expect(end).not.toHaveValue("");
+
+  await expect(
+    page.getByRole("group", { name: "Funnels to include" }),
+  ).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await expect(start).toBeVisible();
+
+  await expect(generate).toBeVisible();
+
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+
+  await page
+    .getByRole("button", { name: "Finance dashboard", exact: true })
+    .click();
+
+  await page
+    .getByRole("button", { name: "Generate report", exact: true })
+    .click();
+
+  await expect(
+    page.getByLabel("Start date · UTC", { exact: true }),
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole("button", { name: "Generate report", exact: true }),
+  ).toBeVisible();
+
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("generation panels start collapsed and preserve options when reopened", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const trigger = page.getByRole("button", {
+    name: "Generate analysis",
+    exact: true,
+  });
+
+  const start = page.getByLabel("Start date", { exact: true });
+
+  await expect(start).toHaveCount(0);
+
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+  await expect(
+    page
+      .locator(".page-header")
+      .getByRole("button", { name: "Generate analysis", exact: true }),
+  ).toBeVisible();
+
+  await trigger.click();
+
+  await expect(start).toBeFocused();
+
+  const ecommerce = page.getByRole("button", {
+    name: "Ecommerce",
+    exact: true,
+  });
+
+  await expect(ecommerce).toHaveAttribute("aria-pressed", "true");
+
+  await ecommerce.focus();
+
+  await page.keyboard.press("Space");
+
+  await expect(ecommerce).toHaveAttribute("aria-pressed", "false");
+
+  await ecommerce.click();
+
+  await expect(ecommerce).toHaveAttribute("aria-pressed", "true");
+
+  await start.fill("2026-10-01");
+
+  await page
+    .getByRole("button", { name: "Collapse generation options" })
+    .click();
+
+  await expect(start).toHaveCount(0);
+
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+
+  await expect(start).toHaveValue("2026-10-01");
+
+  await page
+    .getByRole("button", { name: "Finance dashboard", exact: true })
+    .click();
+
+  const reportTrigger = page.getByRole("button", {
+    name: "Generate report",
+    exact: true,
+  });
+
+  const financeStart = page.getByLabel("Start date · UTC", { exact: true });
+
+  await expect(financeStart).toHaveCount(0);
+
+  await reportTrigger.click();
+
+  await expect(financeStart).toBeFocused();
+});
+
+test("header generation actions stay visible when switching dashboard pages", async ({
+  page,
+}) => {
+  await page.goto("/#/finance");
+
+  await expect(
+    page
+      .locator(".page-header")
+      .getByRole("button", { name: "Generate report", exact: true }),
+  ).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "Analytics dashboard", exact: true })
+    .click();
+
+  const action = page
+    .locator(".page-header")
+    .getByRole("button", { name: "Generate analysis", exact: true });
+
+  await expect(action).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await expect(action).toBeVisible();
+
+  await action.click();
+
+  await expect(page.getByLabel("Start date", { exact: true })).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "Finance dashboard", exact: true })
+    .click();
+
+  await page
+    .getByRole("button", { name: "Analytics dashboard", exact: true })
+    .click();
+
+  await expect(action).toBeVisible();
 });

@@ -21,6 +21,6 @@ const model = defineModel<string | number>({ default: "" });
     v-model="model"
     :type="type"
     :disabled="disabled"
-    class="w-full min-w-0 rounded-lg border border-border bg-black/40 px-3 backdrop-blur-sm py-2.5 text-sm text-white placeholder:text-muted focus:border-gold disabled:opacity-50"
+    class="form-control w-full min-w-0 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-gold disabled:opacity-50 disabled:cursor-not-allowed"
   />
 </template>

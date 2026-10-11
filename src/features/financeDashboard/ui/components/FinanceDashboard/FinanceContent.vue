@@ -5,7 +5,6 @@ import Contribution from "@/features/financeDashboard/ui/sections/Contribution.v
 import FinanceInsights from "@/features/financeDashboard/ui/sections/FinanceInsights.vue";
 import ReportHistory from "@/features/financeDashboard/ui/sections/ReportHistory.vue";
 import FinanceAlerts from "@/features/financeDashboard/ui/sections/FinanceAlerts.vue";
-import Schedules from "@/features/financeDashboard/ui/sections/Schedules.vue";
 
 import type {
   FinanceReportType,
@@ -32,8 +31,6 @@ const emit = defineEmits<{
 
 <template>
   <ReportHistory v-if="section === 'history'" @open="emit('open', $event)" />
-
-  <Schedules v-else-if="section === 'schedules'" />
 
   <template v-else-if="report">
     <ReceiptOverview v-if="section === 'overview'" :report="report" />

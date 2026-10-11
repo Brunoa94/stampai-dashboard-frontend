@@ -8,7 +8,6 @@ import {
 import { receiptSeries } from "@/features/financeDashboard/lib/mappers/finance";
 import {
   validateReference,
-  validateSchedule,
   validFinanceReport,
 } from "@/features/financeDashboard/lib/helpers/validation";
 
@@ -123,25 +122,6 @@ describe("Finance semantics", () => {
         provider_transaction_id: "x",
         order_reference: null,
       }),
-    ).toThrow();
-  });
-
-  it("requires future UTC schedule and inclusive bounded cadence", () => {
-    const body = {
-      name: "Daily",
-      enabled: false,
-      cadence_days: 1,
-      lookback_days: 31,
-      include_ai: false,
-      next_run_at: new Date(Date.now() + 86400000).toISOString(),
-    };
-
-    expect(() => validateSchedule(body)).not.toThrow();
-
-    expect(() => validateSchedule({ ...body, cadence_days: 32 })).toThrow();
-
-    expect(() =>
-      validateSchedule({ ...body, next_run_at: "2020-01-01T00:00:00Z" }),
     ).toThrow();
   });
 });

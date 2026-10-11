@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { Sparkles } from "@lucide/vue";
 import ApiConnectionStatus from "@/shared/ui/ApiConnectionStatus/ApiConnectionStatus.vue";
 import { useFinanceView } from "@/features/financeDashboard/lib/composables/useFinanceView";
 import FinanceContent from "@/features/financeDashboard/ui/components/FinanceDashboard/FinanceContent.vue";
@@ -33,15 +35,38 @@ const {
   generateReport,
   viewTransactions,
 } = useFinanceView();
+
+const generationExpanded = ref(false);
 </script>
 
 <template>
   <div class="space-y-8">
-    <FinanceHeader />
+    <FinanceHeader>
+      <template #actions>
+        <Button
+          id="finance-generation-options-trigger"
+          variant="primary"
+          class="generation-action"
+          :type="generationExpanded ? 'submit' : 'button'"
+          :form="generationExpanded ? 'finance-generation-form' : undefined"
+          :disabled="pending || loading"
+          :aria-expanded="generationExpanded"
+          aria-controls="finance-generation-options"
+          @click="generationExpanded = true"
+        >
+          <Sparkles :size="16" aria-hidden="true" />
+          {{ pending ? "Generating report…" : "Generate report" }}
+        </Button>
+      </template>
+    </FinanceHeader>
 
     <ApiConnectionStatus authentication-required />
 
-    <FinanceControls :pending="pending || loading" @generate="generateReport" />
+    <FinanceControls
+      v-model:expanded="generationExpanded"
+      :pending="pending || loading"
+      @generate="generateReport"
+    />
 
     <Tabs
       v-model="section"

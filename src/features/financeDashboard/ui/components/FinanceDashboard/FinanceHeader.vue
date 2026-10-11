@@ -1,26 +1,19 @@
 <script setup lang="ts">
 import { Wallet } from "@lucide/vue";
-import Heading from "@/shared/ui/Heading/Heading.vue";
-import Paragraph from "@/shared/ui/Paragraph/Paragraph.vue";
-import Span from "@/shared/ui/Span/Span.vue";
-import Chip from "@/shared/ui/Chip/Chip.vue";
+import PageHeader from "@/shared/ui/PageHeader/PageHeader.vue";
+
+defineSlots<{ actions?(): unknown }>();
 </script>
 
 <template>
-  <div class="flex flex-wrap items-end justify-between gap-4">
-    <div class="grid gap-3">
-      <Span variant="label" class="text-gold">Finance agent</Span>
+  <PageHeader
+    label="Finance agent"
+    title="Clarity in every number."
+    description="Reconcile receipts. Understand contribution. Keep your finances in view."
+    badge="Currency-aware reporting"
+  >
+    <template #icon><Wallet :size="18" /></template>
 
-      <Heading as="h1" variant="title">Clarity in every number.</Heading>
-
-      <Paragraph>
-        Reconcile receipts. Understand contribution. Keep your finances in view.
-      </Paragraph>
-    </div>
-
-    <Chip variant="gold">
-      <Wallet :size="12" aria-hidden="true" />
-      Currency-aware reporting
-    </Chip>
-  </div>
+    <template #actions><slot name="actions" /></template>
+  </PageHeader>
 </template>

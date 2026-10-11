@@ -7,6 +7,21 @@
       name="description"
       content="StampAI analytics and finance workspace"
     />
+    <script>
+      // Resolve before first paint to avoid flashing the opposite theme.
+      (() => {
+        let theme = "system";
+        try {
+          theme = localStorage.getItem("stampai.theme") || "system";
+        } catch {}
+        document.documentElement.dataset.theme =
+          theme === "light" || theme === "dark"
+            ? theme
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+      })();
+    </script>
     <title>StampAI · Intelligence dashboard</title>
   </head>
   <body>

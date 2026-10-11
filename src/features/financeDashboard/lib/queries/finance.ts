@@ -3,7 +3,6 @@ import { computed, type Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import {
   listReports,
-  listSchedules,
   listNotifications,
   getReport,
 } from "@/features/financeDashboard/lib/services/finance";
@@ -21,25 +20,6 @@ export function useReportList(offset: Ref<number>) {
       offset.value,
     ]),
     queryFn: ({ signal }) => listReports(offset.value, signal),
-    enabled: computed(
-      () =>
-        !!connection.origin &&
-        (!!connection.token || canUseLocalAdminAuth(connection.origin)),
-    ),
-  });
-}
-
-export function useScheduleList() {
-  const connection = useConnectionStore();
-
-  return useQuery({
-    queryKey: computed(() => [
-      "finance",
-      "schedules",
-      connection.origin,
-      connection.revision,
-    ]),
-    queryFn: ({ signal }) => listSchedules(signal),
     enabled: computed(
       () =>
         !!connection.origin &&

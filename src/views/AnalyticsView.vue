@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { Sparkles } from "@lucide/vue";
 import ApiConnectionStatus from "@/shared/ui/ApiConnectionStatus/ApiConnectionStatus.vue";
 import AnalyticsReportContent from "@/features/analyticsDashboard/ui/components/AnalyticsDashboard/AnalyticsReportContent.vue";
 import AnalyticsEmptyState from "@/features/analyticsDashboard/ui/components/AnalyticsDashboard/AnalyticsEmptyState.vue";
@@ -27,15 +29,38 @@ const {
   funnelTabs,
   selectStage,
 } = useAnalyticsView();
+
+const generationExpanded = ref(false);
 </script>
 
 <template>
   <div class="space-y-8">
-    <AnalyticsHeader />
+    <AnalyticsHeader>
+      <template #actions>
+        <Button
+          id="analytics-generation-options-trigger"
+          variant="primary"
+          class="generation-action"
+          :type="generationExpanded ? 'submit' : 'button'"
+          :form="generationExpanded ? 'analytics-generation-form' : undefined"
+          :disabled="pending"
+          :aria-expanded="generationExpanded"
+          aria-controls="analytics-generation-options"
+          @click="generationExpanded = true"
+        >
+          <Sparkles :size="16" aria-hidden="true" />
+          {{ pending ? "Generating analysis…" : "Generate analysis" }}
+        </Button>
+      </template>
+    </AnalyticsHeader>
 
     <ApiConnectionStatus />
 
-    <ReportControls :pending="pending" @generate="generate" />
+    <ReportControls
+      v-model:expanded="generationExpanded"
+      :pending="pending"
+      @generate="generate"
+    />
 
     <Loading v-if="pending" ai :initial="!reports.length" />
 

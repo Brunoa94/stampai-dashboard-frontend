@@ -138,7 +138,7 @@ const ChartPlot = defineAsyncComponent(
             <Span variant="muted">{{ line.label }}</Span>
           </div>
 
-          <Paragraph class="mt-1 font-mono text-white">
+          <Paragraph class="mt-1 font-mono text-foreground">
             {{ numberLabel(line.values[focused ?? 0]) }}
           </Paragraph>
 

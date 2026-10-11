@@ -8,7 +8,7 @@ interface PropsI {
 withDefaults(defineProps<PropsI>(), { variant: "muted" });
 
 const variants: Record<VariantType, string> = {
-  body: "text-sm leading-relaxed text-white",
+  body: "text-sm leading-relaxed text-foreground",
   muted: "text-sm leading-relaxed text-muted",
   technical: "font-mono text-xs text-muted leading-relaxed",
 };

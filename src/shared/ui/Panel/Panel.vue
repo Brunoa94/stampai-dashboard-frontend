@@ -9,8 +9,8 @@ withDefaults(defineProps<PropsI>(), { variant: "default" });
 <template>
   <section
     :class="[
-      'glass-panel rounded-2xl p-5 lg:p-6',
-      variant === 'gold' && 'gold-panel',
+      'dashboard-panel rounded-xl p-5 lg:p-6',
+      variant === 'gold' && 'accent-panel',
     ]"
   >
     <slot />

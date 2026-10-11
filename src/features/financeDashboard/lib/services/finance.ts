@@ -6,8 +6,6 @@ import type {
   ReportDetailType,
   ReferenceRequestType,
   InvoiceRecordType,
-  ScheduleRequestType,
-  ScheduleType,
   NotificationType,
 } from "@/features/financeDashboard/lib/types/finance";
 import { AppError } from "@/shared/lib/constants/errors";
@@ -71,20 +69,6 @@ export function editInvoice(
     method: "PATCH",
     body,
   });
-}
-
-export function listSchedules(signal?: AbortSignal): Promise<ScheduleType[]> {
-  return apiRequest("/api/finance-agent/schedules", { signal });
-}
-
-export function saveSchedule(
-  body: ScheduleRequestType,
-  id?: string | number,
-): Promise<ScheduleType> {
-  return apiRequest(
-    `/api/finance-agent/schedules${id === undefined ? "" : `/${encodeURIComponent(id)}`}`,
-    { method: id === undefined ? "POST" : "PATCH", body },
-  );
 }
 
 export function listNotifications(

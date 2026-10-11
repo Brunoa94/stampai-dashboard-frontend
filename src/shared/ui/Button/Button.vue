@@ -14,11 +14,13 @@ withDefaults(defineProps<PropsI>(), {
 });
 
 const variants: Record<VariantType, string> = {
-  primary: "bg-gold text-black border-gold font-bold shadow-gold",
-  secondary:
-    "bg-glass-strong text-white border-border backdrop-blur-md hover:bg-white/10 hover:border-white/20",
-  ghost: "bg-transparent text-muted border-transparent hover:text-white",
-  active: "bg-gold/10 text-gold border-gold/20 backdrop-blur-md",
+  primary:
+    "primary-button bg-gold text-on-accent border-gold font-semibold hover:opacity-90",
+  secondary: "bg-surface text-foreground border-border hover:bg-elevated",
+  ghost:
+    "bg-transparent text-muted border-transparent hover:bg-elevated hover:text-foreground",
+  active:
+    "active-button bg-elevated text-foreground border-transparent font-medium",
   danger: "bg-danger/10 text-danger border-danger/20",
 };
 
@@ -30,7 +32,7 @@ const emit = defineEmits<{ click: [event: MouseEvent] }>();
     :type="type"
     :disabled="disabled"
     :class="[
-      'inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+      'control-button inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
       variants[variant],
     ]"
     @click="emit('click', $event)"

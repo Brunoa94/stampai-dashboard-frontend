@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemeSelect from "@/shared/ui/ThemeSelect/ThemeSelect.vue";
 import LoginBrand from "@/features/login/ui/components/LoginBrand.vue";
 import LoginForm from "@/features/login/ui/components/LoginForm.vue";
 
@@ -14,6 +15,8 @@ const router = useRouter();
   <main
     class="flex min-h-screen flex-col items-center justify-center gap-8 px-5"
   >
+    <div class="absolute right-5 top-5"><ThemeSelect /></div>
+
     <LoginBrand />
 
     <LoginForm />

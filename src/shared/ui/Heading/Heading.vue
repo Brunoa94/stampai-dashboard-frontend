@@ -9,9 +9,9 @@ interface PropsI {
 withDefaults(defineProps<PropsI>(), { as: "h2", variant: "section" });
 
 const variants: Record<VariantType, string> = {
-  title: "text-4xl lg:text-5xl font-bold tracking-tight",
-  section: "text-lg font-semibold tracking-tight",
-  card: "text-sm font-semibold",
+  title: "display-heading text-[2rem] sm:text-[2.5rem] xl:text-5xl",
+  section: "font-display text-xl lg:text-2xl font-semibold leading-snug tracking-tight",
+  card: "font-display text-sm font-semibold",
 };
 </script>
 
