@@ -18,9 +18,12 @@ const router = useRouter();
 
 const connection = useConnectionStore();
 
-const pageTitle = computed(() =>
-  route.path === "/finance" ? "Finance" : "Analytics",
-);
+const PAGE_TITLES: Record<string, string> = {
+  "/finance": "Finance",
+  "/activity": "Activity",
+};
+
+const pageTitle = computed(() => PAGE_TITLES[route.path] ?? "Analytics");
 
 function openLoginPreview(): void {
   void router.push("/login");
@@ -55,7 +58,11 @@ function logout(): void {
       >
         <ConnectionSettings v-if="settings" @close="settings = false" />
 
-        <RouterView />
+        <RouterView v-slot="{ Component }">
+          <KeepAlive>
+            <component :is="Component" />
+          </KeepAlive>
+        </RouterView>
       </main>
 
       <DashboardFooter />

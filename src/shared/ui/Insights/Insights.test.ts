@@ -65,4 +65,26 @@ describe("Insights composition", () => {
 
     expect(wrapper.findAll("details p")).toHaveLength(0);
   });
+
+  it("renders issue actions for findings and every limitation when slots are provided", () => {
+    const wrapper = mount(Insights, {
+      props,
+      slots: {
+        evidence: () => h("span", "evidence"),
+        actions: ({ item, kind }: { item: { title: string }; kind: string }) =>
+          h("em", `${kind}:${item.title}`),
+        limitationActions: ({ note }: { note: string }) =>
+          h("strong", `limitation:${note}`),
+      },
+    });
+
+    expect(wrapper.findAll("em").map((node) => node.text())).toEqual([
+      "finding:Finding",
+      "recommendation:Recommendation",
+    ]);
+
+    expect(wrapper.findAll("strong").map((node) => node.text())).toEqual([
+      "limitation:Limited evidence",
+    ]);
+  });
 });

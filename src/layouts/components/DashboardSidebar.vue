@@ -12,7 +12,7 @@ const emit = defineEmits<{ toggleSettings: []; logout: [] }>();
 <template>
   <aside
     :class="[
-      'sticky top-0 flex h-screen shrink-0 flex-col border-r border-border bg-surface/50 p-3 sm:p-5',
+      'glass-bar sticky top-0 flex h-screen shrink-0 flex-col border-r border-border p-3 sm:p-5',
       collapsed ? 'w-20' : 'w-20 md:w-60',
     ]"
   >

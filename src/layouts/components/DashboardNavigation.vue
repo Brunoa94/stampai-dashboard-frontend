@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { ChartNoAxesCombined, Wallet } from "@lucide/vue";
+import { Activity, ChartNoAxesCombined, Wallet } from "@lucide/vue";
 import Button from "@/shared/ui/Button/Button.vue";
 import Span from "@/shared/ui/Span/Span.vue";
 
@@ -44,6 +44,18 @@ const router = useRouter();
         <Wallet :size="19" class="shrink-0" aria-hidden="true" />
 
         <Span v-if="!collapsed" class="hidden md:inline">Finance</Span>
+      </Button>
+
+      <Button
+        :variant="route.path === '/activity' ? 'active' : 'ghost'"
+        aria-label="Activity"
+        title="Activity"
+        :class="['justify-start', collapsed && 'px-3']"
+        @click="router.push('/activity')"
+      >
+        <Activity :size="19" class="shrink-0" aria-hidden="true" />
+
+        <Span v-if="!collapsed" class="hidden md:inline">Activity</Span>
       </Button>
     </nav>
   </div>

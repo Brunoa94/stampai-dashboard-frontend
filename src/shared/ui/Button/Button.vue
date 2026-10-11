@@ -15,9 +15,10 @@ withDefaults(defineProps<PropsI>(), {
 
 const variants: Record<VariantType, string> = {
   primary: "bg-gold text-black border-gold font-bold shadow-gold",
-  secondary: "bg-elevated text-white border-border hover:border-muted",
+  secondary:
+    "bg-glass-strong text-white border-border backdrop-blur-md hover:bg-white/10 hover:border-white/20",
   ghost: "bg-transparent text-muted border-transparent hover:text-white",
-  active: "bg-gold/10 text-gold border-gold/20",
+  active: "bg-gold/10 text-gold border-gold/20 backdrop-blur-md",
   danger: "bg-danger/10 text-danger border-danger/20",
 };
 

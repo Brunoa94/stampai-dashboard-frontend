@@ -99,6 +99,13 @@ test("analytics generation, accessible stage graph, local filters, and failure r
   let posts = 0;
 
   await page.route("https://fixture.test/**", async (route) => {
+    // Issue triage state loads alongside reports; it is not an analysis request.
+    if (route.request().url().includes("/api/report-issues")) {
+      await route.fulfill({ json: [] });
+
+      return;
+    }
+
     posts++;
 
     if (posts === 1) await route.fulfill({ json: [report] });
@@ -312,12 +319,25 @@ test("finance snapshot, verified invoice edits, alerts, schedules, notifications
     page.getByRole("heading", { name: "JPY receipts" }),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Transactions", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Transactions", exact: true }),
+  ).toHaveCount(0);
+
+  await page
+    .getByRole("button", { name: "View transactions in Activity", exact: true })
+    .click();
+
+  await expect(page).toHaveURL(/#\/activity\?section=transactions/);
 
   await page.getByRole("button", { name: /Open details/ }).click();
 
   await expect(page.getByText("Original reference: raw_1")).toBeVisible();
 
+  await page
+    .getByRole("button", { name: "Finance dashboard", exact: true })
+    .click();
+
+  // The open snapshot survives the round trip through Activity.
   await page
     .getByRole("button", { name: "Reconciliation", exact: true })
     .click();
@@ -382,6 +402,12 @@ test("finance snapshot, verified invoice edits, alerts, schedules, notifications
     bodies.find((body) => body.url.endsWith("/schedules"))?.body.next_run_at,
   ).toBe("2099-10-11T09:00:00Z");
 
+  await expect(
+    page.getByRole("button", { name: "Inbox", exact: true }),
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Activity", exact: true }).click();
+
   await page.getByRole("button", { name: "Inbox", exact: true }).click();
 
   await expect(page.getByText("Refund alert", { exact: true })).toBeVisible();
@@ -391,6 +417,14 @@ test("finance snapshot, verified invoice edits, alerts, schedules, notifications
   expect(
     bodies.find((body) => body.url.includes("/notifications/"))?.body,
   ).toEqual({ read: true });
+
+  await page.getByRole("button", { name: "Open report", exact: true }).click();
+
+  await expect(page).toHaveURL(/#\/finance$/);
+
+  await expect(
+    page.getByRole("heading", { name: "JPY receipts" }),
+  ).toBeVisible();
 });
 
 test("saved finance reports load and open without generating a new report", async ({
@@ -572,6 +606,8 @@ test("empty schedules and inbox are distinct from failed requests", async ({
   await expect(
     page.getByRole("heading", { name: "No schedules yet", exact: true }),
   ).toBeVisible();
+
+  await page.getByRole("button", { name: "Activity", exact: true }).click();
 
   await page.getByRole("button", { name: "Inbox", exact: true }).click();
 

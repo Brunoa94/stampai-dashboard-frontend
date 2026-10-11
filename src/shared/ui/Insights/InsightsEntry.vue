@@ -16,7 +16,10 @@ interface PropsI {
 
 defineProps<PropsI>();
 
-defineSlots<{ evidence(props: { items: string[] }): unknown }>();
+defineSlots<{
+  evidence(props: { items: string[] }): unknown;
+  actions?(props: { item: InsightEntryType; kind: InsightKindType }): unknown;
+}>();
 </script>
 
 <template>
@@ -47,5 +50,9 @@ defineSlots<{ evidence(props: { items: string[] }): unknown }>();
         <slot name="evidence" :items="items" />
       </template>
     </InsightsEvidence>
+
+    <div v-if="$slots.actions" class="mt-4">
+      <slot name="actions" :item="item" :kind="kind" />
+    </div>
   </article>
 </template>

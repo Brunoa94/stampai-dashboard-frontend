@@ -9,6 +9,11 @@ import Alert from "@/shared/ui/Alert/Alert.vue";
 import StageActivity from "@/features/analyticsDashboard/ui/components/StageActivity/StageActivity.vue";
 import type { AnalyticsReportType } from "@/features/analyticsDashboard/lib/types/analytics";
 import { useAnalyticsOverview } from "@/features/analyticsDashboard/lib/composables/useAnalyticsOverview";
+import IssueActions from "@/shared/ui/IssueActions/IssueActions.vue";
+import LimitationNote from "@/shared/ui/LimitationNote/LimitationNote.vue";
+import { toRef } from "vue";
+import { useAnalyticsIssues } from "@/features/analyticsDashboard/lib/composables/useAnalyticsIssues";
+import { limitationIssue } from "@/features/analyticsDashboard/lib/mappers/analyticsIssues";
 
 interface PropsI {
   report: AnalyticsReportType;
@@ -19,6 +24,16 @@ const props = defineProps<PropsI>();
 const emit = defineEmits<{ stage: [id: string] }>();
 
 const { cards, series, dates, revenue, context } = useAnalyticsOverview(props);
+
+const {
+  dataQualityLimitations,
+  find,
+  isPending,
+  errorFor,
+  pendingKey,
+  createIssue,
+  dismiss,
+} = useAnalyticsIssues(toRef(props, "report"));
 </script>
 
 <template>
@@ -75,11 +90,20 @@ const { cards, series, dates, revenue, context } = useAnalyticsOverview(props);
       @select="emit('stage', $event)"
     />
 
-    <Paragraph
-      v-for="note in report.dashboard.dataQuality.limitations"
-      :key="note"
-    >
+    <LimitationNote v-for="note in dataQualityLimitations" :key="note">
       {{ note }}
-    </Paragraph>
+
+      <template #actions>
+        <IssueActions
+          :label="note"
+          :issue="find(limitationIssue(report, note))"
+          :pending="isPending(limitationIssue(report, note))"
+          :disabled="!!pendingKey"
+          :error="errorFor(limitationIssue(report, note))"
+          @github="createIssue(limitationIssue(report, note))"
+          @dismiss="dismiss(limitationIssue(report, note))"
+        />
+      </template>
+    </LimitationNote>
   </div>
 </template>

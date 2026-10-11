@@ -4,14 +4,18 @@
   --color-black: #000000;
   --color-surface: #0f0f0f;
   --color-elevated: #1a1a1a;
-  --color-border: #262626;
+  --color-border: rgb(255 255 255 / 0.09);
   --color-muted: #a3a3a3;
   --color-success: #10b981;
   --color-danger: #ef4444;
   --color-purple: #a78bfa;
   --font-sans: "General Sans", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-glass: rgb(255 255 255 / 0.04);
+  --color-glass-strong: rgb(255 255 255 / 0.07);
   --shadow-gold: 0 0 20px rgb(250 195 6 / 0.15);
+  --shadow-glass:
+    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 8px 32px rgb(0 0 0 / 0.35);
 }
 :root {
   color-scheme: dark;
@@ -20,15 +24,40 @@
   --surface-dark: #0f0f0f;
   --surface-elevated: #1a1a1a;
   --border-color: #262626;
+  --glass-fill: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.05),
+    rgb(255 255 255 / 0.015)
+  );
+  --glass-tint: rgb(15 15 15 / 0.55);
+  --glass-edge: rgb(255 255 255 / 0.09);
+  --glass-blur: blur(16px) saturate(140%);
   --text-secondary: #a3a3a3;
   --emerald: #10b981;
   --danger-red: #ef4444;
 }
 body {
   margin: 0;
-  background: var(--pure-black);
+  /* Faint ambient glow so translucent glass surfaces have something to frost. */
+  background:
+    radial-gradient(
+      60rem 40rem at 8% -10%,
+      rgb(250 195 6 / 0.09),
+      transparent 60%
+    ),
+    radial-gradient(
+      50rem 40rem at 100% 110%,
+      rgb(167 139 250 / 0.08),
+      transparent 60%
+    ),
+    var(--pure-black);
+  background-attachment: fixed;
   color: white;
   font-family: var(--font-sans);
+}
+option {
+  background: var(--surface-dark);
+  color: white;
 }
 button,
 input,
@@ -46,14 +75,44 @@ button:disabled {
   outline-offset: 4px;
 }
 .glass-panel {
-  background: rgb(15 15 15 / 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
+  background: var(--glass-fill), var(--glass-tint);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--shadow-glass);
+}
+.glass-bar {
+  background: rgb(10 10 10 / 0.55);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
 }
 .gold-panel {
   border-color: rgb(250 195 6 / 0.3);
-  background: rgb(250 195 6 / 0.05);
-  box-shadow: var(--shadow-gold);
+  background:
+    linear-gradient(180deg, rgb(250 195 6 / 0.08), rgb(250 195 6 / 0.02)),
+    var(--glass-tint);
+  box-shadow:
+    inset 0 1px 0 rgb(250 195 6 / 0.12),
+    var(--shadow-gold);
+}
+/* Keep text legible where blur is unsupported or transparency is unwanted. */
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .glass-panel {
+    background: var(--surface-dark);
+  }
+  .glass-bar {
+    background: var(--surface-dark);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-bar {
+    background: var(--surface-dark);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 .skeleton {
   background: linear-gradient(

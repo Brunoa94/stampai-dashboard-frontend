@@ -2,12 +2,15 @@
 import Panel from "@/shared/ui/Panel/Panel.vue";
 import Heading from "@/shared/ui/Heading/Heading.vue";
 import Paragraph from "@/shared/ui/Paragraph/Paragraph.vue";
+import LimitationNote from "@/shared/ui/LimitationNote/LimitationNote.vue";
 
 interface PropsI {
   limitations: string[];
 }
 
 defineProps<PropsI>();
+
+defineSlots<{ actions?(props: { note: string }): unknown }>();
 </script>
 
 <template>
@@ -18,8 +21,16 @@ defineProps<PropsI>();
       No review limitations were returned.
     </Paragraph>
 
-    <Paragraph v-for="(note, index) in limitations" :key="index" class="mb-2">
+    <LimitationNote
+      v-for="(note, index) in limitations"
+      :key="index"
+      class="mb-4"
+    >
       {{ note }}
-    </Paragraph>
+
+      <template v-if="$slots.actions" #actions>
+        <slot name="actions" :note="note" />
+      </template>
+    </LimitationNote>
   </Panel>
 </template>

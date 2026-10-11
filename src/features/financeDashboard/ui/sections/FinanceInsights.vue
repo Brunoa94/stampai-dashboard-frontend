@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import { toRef } from "vue";
 import Insights from "@/shared/ui/Insights/Insights.vue";
 import Paragraph from "@/shared/ui/Paragraph/Paragraph.vue";
 import Alert from "@/shared/ui/Alert/Alert.vue";
 import Button from "@/shared/ui/Button/Button.vue";
+import IssueActions from "@/shared/ui/IssueActions/IssueActions.vue";
+import { useFinanceIssues } from "@/features/financeDashboard/lib/composables/useFinanceIssues";
+import {
+  findingIssue,
+  limitationIssue,
+} from "@/features/financeDashboard/lib/mappers/financeIssues";
 import type { FinanceReportType } from "@/features/financeDashboard/lib/types/finance";
 import { evidenceTarget } from "@/features/financeDashboard/lib/helpers/finance";
 import { ERROR_MESSAGES } from "@/shared/lib/constants/errors";
@@ -11,7 +18,18 @@ interface PropsI {
   report: FinanceReportType;
 }
 
-defineProps<PropsI>();
+const props = defineProps<PropsI>();
+
+const {
+  findings,
+  reviewLimitations,
+  find,
+  isPending,
+  errorFor,
+  pendingKey,
+  createIssue,
+  dismiss,
+} = useFinanceIssues(toRef(props, "report"));
 
 const emit = defineEmits<{ evidence: [target: string] }>();
 </script>
@@ -30,12 +48,9 @@ const emit = defineEmits<{ evidence: [target: string] }>();
     <Insights
       v-else-if="report.insights"
       :overview="report.insights.overview"
-      :findings="report.insights.findings"
+      :findings="findings"
       :recommendations="report.insights.recommendations"
-      :limitations="[
-        ...report.dashboard.limitations,
-        ...report.insights.limitations,
-      ]"
+      :limitations="reviewLimitations"
     >
       <template #evidence="{ items }">
         <div v-for="id in items" :key="id" class="mt-2">
@@ -58,6 +73,31 @@ const emit = defineEmits<{ evidence: [target: string] }>();
 
           <Paragraph v-else>{{ ERROR_MESSAGES.AI }}</Paragraph>
         </div>
+      </template>
+
+      <template #actions="{ item, kind }">
+        <IssueActions
+          v-if="kind === 'finding'"
+          :label="item.title"
+          :issue="find(findingIssue(report, item))"
+          :pending="isPending(findingIssue(report, item))"
+          :disabled="!!pendingKey"
+          :error="errorFor(findingIssue(report, item))"
+          @github="createIssue(findingIssue(report, item))"
+          @dismiss="dismiss(findingIssue(report, item))"
+        />
+      </template>
+
+      <template #limitationActions="{ note }">
+        <IssueActions
+          :label="note"
+          :issue="find(limitationIssue(report, note))"
+          :pending="isPending(limitationIssue(report, note))"
+          :disabled="!!pendingKey"
+          :error="errorFor(limitationIssue(report, note))"
+          @github="createIssue(limitationIssue(report, note))"
+          @dismiss="dismiss(limitationIssue(report, note))"
+        />
       </template>
     </Insights>
   </div>

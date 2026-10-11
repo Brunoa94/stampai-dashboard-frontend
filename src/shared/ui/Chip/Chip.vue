@@ -8,7 +8,7 @@ interface PropsI {
 withDefaults(defineProps<PropsI>(), { variant: "neutral" });
 
 const variants: Record<VariantType, string> = {
-  neutral: "bg-elevated text-muted border-border",
+  neutral: "bg-glass-strong text-muted border-border",
   gold: "bg-gold/10 text-gold border-gold/20",
   success: "bg-success/10 text-success border-success/20",
   danger: "bg-danger/10 text-danger border-danger/20",

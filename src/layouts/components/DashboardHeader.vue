@@ -16,7 +16,7 @@ const emit = defineEmits<{ loginPreview: [] }>();
 
 <template>
   <header
-    class="flex h-16 items-center justify-between gap-3 border-b border-border px-5 lg:px-8"
+    class="glass-bar sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border px-5 lg:px-8"
   >
     <div class="flex items-center gap-2">
       <Span variant="muted">Workspace</Span>

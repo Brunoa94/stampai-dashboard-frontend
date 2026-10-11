@@ -2,7 +2,10 @@
 import InsightsOverview from "@/shared/ui/Insights/InsightsOverview.vue";
 import InsightsGroup from "@/shared/ui/Insights/InsightsGroup.vue";
 import InsightsLimitations from "@/shared/ui/Insights/InsightsLimitations.vue";
-import type { InsightEntryType } from "@/shared/lib/types/insights";
+import type {
+  InsightEntryType,
+  InsightKindType,
+} from "@/shared/lib/types/insights";
 
 interface PropsI {
   overview: string;
@@ -13,7 +16,11 @@ interface PropsI {
 
 defineProps<PropsI>();
 
-defineSlots<{ evidence(props: { items: string[] }): unknown }>();
+defineSlots<{
+  evidence(props: { items: string[] }): unknown;
+  actions?(props: { item: InsightEntryType; kind: InsightKindType }): unknown;
+  limitationActions?(props: { note: string }): unknown;
+}>();
 </script>
 
 <template>
@@ -25,15 +32,27 @@ defineSlots<{ evidence(props: { items: string[] }): unknown }>();
         <template v-if="$slots.evidence" #evidence="{ items }">
           <slot name="evidence" :items="items" />
         </template>
+
+        <template v-if="$slots.actions" #actions="slotProps">
+          <slot name="actions" v-bind="slotProps" />
+        </template>
       </InsightsGroup>
 
       <InsightsGroup :items="recommendations" kind="recommendation">
         <template v-if="$slots.evidence" #evidence="{ items }">
           <slot name="evidence" :items="items" />
         </template>
+
+        <template v-if="$slots.actions" #actions="slotProps">
+          <slot name="actions" v-bind="slotProps" />
+        </template>
       </InsightsGroup>
     </div>
 
-    <InsightsLimitations :limitations="limitations" />
+    <InsightsLimitations :limitations="limitations">
+      <template v-if="$slots.limitationActions" #actions="{ note }">
+        <slot name="limitationActions" :note="note" />
+      </template>
+    </InsightsLimitations>
   </div>
 </template>

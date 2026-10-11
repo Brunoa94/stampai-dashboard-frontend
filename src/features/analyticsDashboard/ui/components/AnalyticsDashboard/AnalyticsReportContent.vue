@@ -8,11 +8,10 @@ import Button from "@/shared/ui/Button/Button.vue";
 
 import Tabs from "@/shared/ui/Tabs/Tabs.vue";
 
-import Insights from "@/shared/ui/Insights/Insights.vue";
-
 import AnalyticsOverview from "@/features/analyticsDashboard/ui/sections/AnalyticsOverview.vue";
 import AnalyticsBreakdowns from "@/features/analyticsDashboard/ui/sections/AnalyticsBreakdowns.vue";
 import ProductActivity from "@/features/analyticsDashboard/ui/sections/ProductActivity.vue";
+import AnalyticsInsights from "@/features/analyticsDashboard/ui/sections/AnalyticsInsights.vue";
 import { FUNNELS } from "@/features/analyticsDashboard/lib/constants/funnels";
 
 import type { AnalyticsReportType } from "@/features/analyticsDashboard/lib/types/analytics";
@@ -85,15 +84,6 @@ const emit = defineEmits<{ stage: [id: string] }>();
 
     <ProductActivity v-else-if="section === 'products'" :report="report" />
 
-    <Insights
-      v-else
-      :overview="report.report.overview"
-      :findings="report.report.findings"
-      :recommendations="report.report.recommendations"
-      :limitations="[
-        ...report.dashboard.dataQuality.limitations,
-        ...report.report.limitations,
-      ]"
-    />
+    <AnalyticsInsights v-else :report="report" />
   </div>
 </template>

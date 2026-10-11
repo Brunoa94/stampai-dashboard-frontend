@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import ReceiptOverview from "@/features/financeDashboard/ui/sections/ReceiptOverview.vue";
-import Transactions from "@/features/financeDashboard/ui/sections/Transactions.vue";
 import Reconciliation from "@/features/financeDashboard/ui/sections/Reconciliation.vue";
 import Contribution from "@/features/financeDashboard/ui/sections/Contribution.vue";
 import FinanceInsights from "@/features/financeDashboard/ui/sections/FinanceInsights.vue";
 import ReportHistory from "@/features/financeDashboard/ui/sections/ReportHistory.vue";
 import FinanceAlerts from "@/features/financeDashboard/ui/sections/FinanceAlerts.vue";
 import Schedules from "@/features/financeDashboard/ui/sections/Schedules.vue";
-import Notifications from "@/features/financeDashboard/ui/sections/Notifications.vue";
 
 import type {
   FinanceReportType,
@@ -37,15 +35,8 @@ const emit = defineEmits<{
 
   <Schedules v-else-if="section === 'schedules'" />
 
-  <Notifications
-    v-else-if="section === 'notifications'"
-    @open="emit('open', $event)"
-  />
-
   <template v-else-if="report">
     <ReceiptOverview v-if="section === 'overview'" :report="report" />
-
-    <Transactions v-else-if="section === 'transactions'" :report="report" />
 
     <Reconciliation v-else-if="section === 'reconciliation'" :report="report" />
 

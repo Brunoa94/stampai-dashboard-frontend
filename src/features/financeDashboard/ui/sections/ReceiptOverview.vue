@@ -12,6 +12,11 @@ import { money } from "@/shared/lib/helpers/format";
 import { utcLabel } from "@/shared/lib/helpers/dates";
 import { ERROR_MESSAGES } from "@/shared/lib/constants/errors";
 import { useReceiptOverview } from "@/features/financeDashboard/lib/composables/useReceiptOverview";
+import IssueActions from "@/shared/ui/IssueActions/IssueActions.vue";
+import LimitationNote from "@/shared/ui/LimitationNote/LimitationNote.vue";
+import { toRef } from "vue";
+import { useFinanceIssues } from "@/features/financeDashboard/lib/composables/useFinanceIssues";
+import { limitationIssue } from "@/features/financeDashboard/lib/mappers/financeIssues";
 
 interface PropsI {
   report: FinanceReportType;
@@ -20,6 +25,16 @@ interface PropsI {
 const props = defineProps<PropsI>();
 
 const { complete, currencies, exportContexts } = useReceiptOverview(props);
+
+const {
+  limitations,
+  find,
+  isPending,
+  errorFor,
+  pendingKey,
+  createIssue,
+  dismiss,
+} = useFinanceIssues(toRef(props, "report"));
 </script>
 
 <template>
@@ -113,17 +128,25 @@ const { complete, currencies, exportContexts } = useReceiptOverview(props);
     <Panel>
       <Heading class="mb-3">Measurement limitations</Heading>
 
-      <Paragraph v-if="!report.dashboard.limitations.length">
+      <Paragraph v-if="!limitations.length">
         No measurement limitations were returned.
       </Paragraph>
 
-      <Paragraph
-        v-for="note in report.dashboard.limitations"
-        :key="note"
-        class="mb-2"
-      >
+      <LimitationNote v-for="note in limitations" :key="note" class="mb-4">
         {{ note }}
-      </Paragraph>
+
+        <template #actions>
+          <IssueActions
+            :label="note"
+            :issue="find(limitationIssue(report, note))"
+            :pending="isPending(limitationIssue(report, note))"
+            :disabled="!!pendingKey"
+            :error="errorFor(limitationIssue(report, note))"
+            @github="createIssue(limitationIssue(report, note))"
+            @dismiss="dismiss(limitationIssue(report, note))"
+          />
+        </template>
+      </LimitationNote>
     </Panel>
   </div>
 </template>

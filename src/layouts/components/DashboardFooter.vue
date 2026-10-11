@@ -4,7 +4,7 @@ import Span from "@/shared/ui/Span/Span.vue";
 
 <template>
   <footer
-    class="flex flex-wrap justify-between gap-2 border-t border-border px-8 py-5"
+    class="glass-bar flex flex-wrap justify-between gap-2 border-t border-border px-8 py-5"
   >
     <Span variant="technical">STAMPAI / INTELLIGENCE WORKSPACE</Span>
 

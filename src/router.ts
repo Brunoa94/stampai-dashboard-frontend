@@ -3,6 +3,7 @@ import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import LoginView from "@/views/LoginView.vue";
 import AnalyticsView from "@/views/AnalyticsView.vue";
 import FinanceView from "@/views/FinanceView.vue";
+import ActivityView from "@/views/ActivityView.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -15,6 +16,7 @@ export const router = createRouter({
         { path: "", redirect: "/analytics" },
         { path: "analytics", component: AnalyticsView },
         { path: "finance", component: FinanceView },
+        { path: "activity", component: ActivityView },
       ],
     },
   ],

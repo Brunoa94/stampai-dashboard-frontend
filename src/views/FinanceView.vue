@@ -31,6 +31,7 @@ const {
   openSaved,
   evidence,
   generateReport,
+  viewTransactions,
 } = useFinanceView();
 </script>
 
@@ -59,11 +60,20 @@ const {
       </template>
     </Alert>
 
-    <Paragraph v-if="report" variant="technical">
-      Snapshot {{ report.id }} · {{ report.period.startDate }} —
-      {{ report.period.endDate }} UTC · {{ utcLabel(report.generatedAt) }} ·
-      {{ report.calculationVersion }}
-    </Paragraph>
+    <div
+      v-if="report"
+      class="flex flex-wrap items-center justify-between gap-3"
+    >
+      <Paragraph variant="technical">
+        Snapshot {{ report.id }} · {{ report.period.startDate }} —
+        {{ report.period.endDate }} UTC · {{ utcLabel(report.generatedAt) }} ·
+        {{ report.calculationVersion }}
+      </Paragraph>
+
+      <Button variant="ghost" @click="viewTransactions">
+        View transactions in Activity
+      </Button>
+    </div>
 
     <FinanceContent
       :section="section"
